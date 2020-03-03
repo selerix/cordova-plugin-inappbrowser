@@ -96,6 +96,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String LOCATION = "location";
     private static final String ZOOM = "zoom";
     private static final String HIDDEN = "hidden";
+    private static final String FULLSCREEN = "fullscreen";
     private static final String LOAD_START_EVENT = "loadstart";
     private static final String LOAD_STOP_EVENT = "loadstop";
     private static final String LOAD_ERROR_EVENT = "loaderror";
@@ -127,6 +128,7 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean showLocationBar = true;
     private boolean showZoomControls = true;
     private boolean openWindowHidden = false;
+    private boolean openWindowFullscreen = true;
     private boolean clearAllCache = false;
     private boolean clearSessionCache = false;
     private boolean hadwareBackButton = true;
@@ -636,6 +638,7 @@ public class InAppBrowser extends CordovaPlugin {
         showZoomControls = true;
         openWindowHidden = false;
         mediaPlaybackRequiresUserGesture = false;
+        openWindowFullscreen = true;
 
         if (features != null) {
             String show = features.get(LOCATION);
@@ -655,6 +658,10 @@ public class InAppBrowser extends CordovaPlugin {
             String hidden = features.get(HIDDEN);
             if (hidden != null) {
                 openWindowHidden = hidden.equals("yes") ? true : false;
+            }
+            String fullscreen = features.get(FULLSCREEN);
+            if (fullscreen != null) {
+                openWindowFullscreen = fullscreen.equals("yes") ? true : false;
             }
             String hardwareBack = features.get(HARDWARE_BACK_BUTTON);
             if (hardwareBack != null) {
@@ -794,7 +801,12 @@ public class InAppBrowser extends CordovaPlugin {
                 dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar);
                 dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                // Decide if we want to hide statusbar
+                if(openWindowFullscreen){
+                    dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                } else {
+                    dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                }
                 dialog.setCancelable(true);
                 dialog.setInAppBroswer(getInAppBrowser());
 
