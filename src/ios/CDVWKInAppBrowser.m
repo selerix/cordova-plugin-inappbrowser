@@ -704,6 +704,8 @@ static CDVWKInAppBrowser* instance = nil;
     // Based on https://stackoverflow.com/questions/4544489/how-to-remove-a-uiwindow
     self->tmpWindow.hidden = YES;
     
+    if (tmpWindow != nil) { [tmpWindow removeFromSuperview]; tmpWindow = nil; }
+    
     if (IsAtLeastiOSVersion(@"7.0")) {
         if (_previousStatusBarStyle != -1) {
             [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle];
