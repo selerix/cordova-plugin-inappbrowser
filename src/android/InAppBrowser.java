@@ -108,6 +108,11 @@ public class InAppBrowser extends CordovaPlugin {
     private static final Boolean DEFAULT_HARDWARE_BACK = true;
     private static final String USER_WIDE_VIEW_PORT = "useWideViewPort";
     private static final String TOOLBAR_COLOR = "toolbarcolor";
+    private static final String SHOW_CLOSE_DIALOG = "showclosedialog";
+    private static final String CLOSE_DIALOG_CAPTION = "closedialogcaption";
+    private static final String CLOSE_DIALOG_TEXT = "closedialogtext";
+    private static final String CLOSE_DIALOG_OK = "closedialogok";
+    private static final String CLOSE_DIALOG_CANCEL = "closedialogcancel";
     private static final String CLOSE_BUTTON_CAPTION = "closebuttoncaption";
     private static final String CLOSE_BUTTON_COLOR = "closebuttoncolor";
     private static final String LEFT_TO_RIGHT = "lefttoright";
@@ -118,7 +123,8 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String FOOTER_COLOR = "footercolor";
     private static final String BEFORELOAD = "beforeload";
 
-    private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR);
+    private static final List customizableOptions = Arrays.asList(CLOSE_DIALOG_CAPTION, CLOSE_DIALOG_TEXT, CLOSE_DIALOG_OK, CLOSE_DIALOG_CANCEL, 
+        CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR);
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
@@ -133,10 +139,15 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean mediaPlaybackRequiresUserGesture = false;
     private boolean shouldPauseInAppBrowser = false;
     private boolean useWideViewPort = true;
+    private boolean showCloseDialog = false;
     private ValueCallback<Uri> mUploadCallback;
     private ValueCallback<Uri[]> mUploadCallbackLollipop;
     private final static int FILECHOOSER_REQUESTCODE = 1;
     private final static int FILECHOOSER_REQUESTCODE_LOLLIPOP = 2;
+    private String closeDialogCaption = "Exit";
+    private String closeDialogText = "You are about to exit, are you sure?";
+    private String closeDialogOkButton = "Exit";
+    private String closeDialogCancelButton = "Cancel";
     private String closeButtonCaption = "";
     private String closeButtonColor = "";
     private boolean leftToRight = false;
@@ -585,6 +596,46 @@ public class InAppBrowser extends CordovaPlugin {
     }
 
     /**
+     * Has the user set the close dialog
+     * @return boolean
+     */
+    public boolean hasCloseDialog() {
+        return showCloseDialog;
+    }
+
+    /**
+     * Get the exit confirmation dialog caption
+     * @return string
+     */
+    public String getCloseDialogCaption(){
+        return closeDialogCaption;
+    }
+
+    /**
+     * Get the exit confirmation dialog text
+     * @return string
+     */
+    public String getCloseDialogText(){
+        return closeDialogText;
+    }
+    
+    /**
+     * Get the exit confirmation dialog positive button text
+     * @return string
+     */
+    public String getCloseDialogOkButton(){
+        return closeDialogOkButton;
+    }
+    
+    /**
+     * Get the exit confirmation dialog negative button text
+     * @return string
+     */
+    public String getCloseDialogCancelButton(){
+        return closeDialogCancelButton;
+    }
+
+    /**
      * Checks to see if it is possible to go forward one page in history, then does so.
      */
     private void goForward() {
@@ -636,6 +687,7 @@ public class InAppBrowser extends CordovaPlugin {
         showZoomControls = true;
         openWindowHidden = false;
         mediaPlaybackRequiresUserGesture = false;
+        showCloseDialog = false;
 
         if (features != null) {
             String show = features.get(LOCATION);
@@ -661,6 +713,26 @@ public class InAppBrowser extends CordovaPlugin {
                 hadwareBackButton = hardwareBack.equals("yes") ? true : false;
             } else {
                 hadwareBackButton = DEFAULT_HARDWARE_BACK;
+            }
+            String showCloseDialogSet = features.get(SHOW_CLOSE_DIALOG);
+            if (showCloseDialogSet != null) {
+                showCloseDialog = showCloseDialogSet.equals("yes") ? true : false;
+            }
+            String closeDialogCaptionSet = features.get(CLOSE_DIALOG_CAPTION);
+            if (closeDialogCaptionSet != null) {
+                closeDialogCaption = closeDialogCaptionSet;
+            }
+            String closeDialogTextSet = features.get(CLOSE_DIALOG_TEXT);
+            if (closeDialogTextSet != null) {
+                closeDialogText = closeDialogTextSet;
+            }
+            String closeDialogOkSet = features.get(CLOSE_DIALOG_OK);
+            if (closeDialogOkSet != null) {
+                closeDialogOkButton = closeDialogOkSet;
+            }
+            String closeDialogCancelSet = features.get(CLOSE_DIALOG_CANCEL);
+            if (closeDialogCancelSet != null) {
+                closeDialogCancelButton = closeDialogCancelSet;
             }
             String mediaPlayback = features.get(MEDIA_PLAYBACK_REQUIRES_USER_ACTION);
             if (mediaPlayback != null) {

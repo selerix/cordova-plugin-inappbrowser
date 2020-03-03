@@ -21,6 +21,7 @@ package org.apache.cordova.inappbrowser;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,14 +45,31 @@ public class InAppBrowserDialog extends Dialog {
     public void onBackPressed () {
         if (this.inAppBrowser == null) {
             this.dismiss();
+        } else  if (inAppBrowser.hardwareBack() && inAppBrowser.canGoBack()) {
+            inAppBrowser.goBack();
+        } else  if(inAppBrowser.hasCloseDialog()){            
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context)
+            .setTitle(inAppBrowser.getCloseDialogCaption())
+            .setMessage(inAppBrowser.getCloseDialogText())
+            .setPositiveButton(inAppBrowser.getCloseDialogOkButton(), new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int which){
+                    if (inAppBrowser == null) {
+                        dismiss();
+                    } 
+                    else {
+                        inAppBrowser.closeDialog();
+                    }
+                }
+            })
+            .setNegativeButton(inAppBrowser.getCloseDialogCancelButton(), new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog,int which){
+                    dialog.cancel();
+                }
+            });
+            alertDialogBuilder.create();
+            alertDialogBuilder.show();
         } else {
-            // better to go through the in inAppBrowser
-            // because it does a clean up
-            if (this.inAppBrowser.hardwareBack() && this.inAppBrowser.canGoBack()) {
-                this.inAppBrowser.goBack();
-            }  else {
-                this.inAppBrowser.closeDialog();
-            }
+            inAppBrowser.closeDialog();
         }
     }
 }
