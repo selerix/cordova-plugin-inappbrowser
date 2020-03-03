@@ -439,8 +439,8 @@ public class InAppBrowser extends CordovaPlugin {
             while(features.hasMoreElements()) {
                 option = new StringTokenizer(features.nextToken(), "=");
                 if (option.hasMoreElements()) {
-                    String key = option.nextToken();
-                    String value = option.nextToken();
+                    String key = option.nextToken().trim();
+                    String value = option.nextToken().trim();
                     if (!customizableOptions.contains(key)) {
                         value = value.equals("yes") || value.equals("no") ? value : "yes";
                     }
